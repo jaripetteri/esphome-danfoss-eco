@@ -1,45 +1,58 @@
 #pragma once
 
-#include "esphome/components/esp32_ble_tracker/esp32_ble_tracker.h"
-
 #include "properties.h"
+#include <queue>
+#include <memory>
 
-namespace esphome
-{
-    namespace danfoss_eco
-    {
-        using namespace std;
+namespace esphome {
+namespace danfoss_eco {
 
-        enum class CommandType
-        {
-            READ,
-            WRITE
-        };
+using namespace std;
 
-        struct Command
-        {
-            Command(CommandType t, shared_ptr<DeviceProperty> const &p) : type(t), property(p) {}
+enum class CommandType {
+    READ,
+    WRITE
+};
 
-            CommandType type; // 0 - read, 1 - write
-            shared_ptr<DeviceProperty> property;
+struct Command {
+    Command(CommandType t, shared_ptr<DeviceProperty> const &p) : type(t), property(p) {}
 
-            bool execute(esphome::ble_client::BLEClient *client)
-            {
-                if (this->type == CommandType::WRITE)
-                {
-                    WritableProperty *wp = static_cast<WritableProperty *>(this->property.get());
-                    return wp->write_request(client);
-                }
-                else
-                    return this->property->read_request(client);
-            }
-        };
+    CommandType type; // 0 - read, 1 - write
+    shared_ptr<DeviceProperty> property;
 
-        class CommandQueue : public esphome::esp32_ble_tracker::Queue<Command>
-        {
-        public:
-            bool is_empty() { return this->q_.empty(); }
-        };
+    bool execute(esphome::ble_client::BLEClient *client) {
+        if (this->type == CommandType::WRITE) {
+            WritableProperty *wp = static_cast<WritableProperty *>(this->property.get());
+            return wp->write_request(client);
+        } else
+            return this->property->read_request(client);
+    }
+};
 
-    } // namespace danfoss_eco
-} // namespace esphome
+class CommandQueue {
+ public:
+    void push(const Command &cmd) {
+        queue_.push(cmd);
+    }
+
+    Command pop() {
+        if (queue_.empty()) return Command(CommandType::READ, nullptr); // tyhjä komento
+        Command cmd = queue_.front();
+        queue_.pop();
+        return cmd;
+    }
+
+    bool empty() const {
+        return queue_.empty();
+    }
+
+    size_t size() const {
+        return queue_.size();
+    }
+
+ private:
+    std::queue<Command> queue_;
+};
+
+}  // namespace danfoss_eco
+}  // namespace esphome
