@@ -15,7 +15,7 @@
 \**********************************************************/
 
 
-#include "xxtea.h"
+#include "xxtea_c.h"
 
 #include <string.h>
 #if defined(_MSC_VER) && _MSC_VER < 1600
