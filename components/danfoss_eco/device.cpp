@@ -21,6 +21,8 @@ namespace esphome
       // pretend, we have already discovered the device
       copy_address(this->parent()->get_address(), this->parent()->get_remote_bda());
       this->parent()->set_state(ClientState::INIT);
+
+      test_xxtea();
     }
 
     void Device::loop()

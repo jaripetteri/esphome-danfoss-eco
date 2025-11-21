@@ -109,5 +109,25 @@ namespace esphome
             bd_addr[5] = (mac >> 0) & 0xFF;
         }
 
-    }
-}
+        void test_xxtea() {
+            Xxtea xx;
+            uint8_t key[16] = {1,2,3,4};
+            xx.set_key(key, 4);
+
+            uint8_t data[8] = {'T','E','S','T','D','A','T','A'};
+            uint8_t encrypted[64];
+            size_t enc_len = sizeof(encrypted);
+
+            int enc_status = xx.encrypt(data, sizeof(data), encrypted, &enc_len);
+            ESP_LOGI("xxtea", "Encrypt status=%d, outlen=%d", enc_status, (int)enc_len);
+
+            uint8_t decrypted[64];
+            size_t dec_len = sizeof(decrypted);
+
+            int dec_status = xx.decrypt(encrypted, enc_len, decrypted, &dec_len);
+            ESP_LOGI("xxtea", "Decrypt status=%d, outlen=%d, result=%.*s",
+                     dec_status, (int)dec_len, (int)dec_len, decrypted);
+        }
+
+    } // namespace danfoss_eco
+} // namespace esphome
