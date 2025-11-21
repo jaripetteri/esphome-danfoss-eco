@@ -1,11 +1,11 @@
 #pragma once
 
-#include <xxtea-lib.h>
+#include "xxtea-lib.h"
 
 // key Size is always fixed
-#define MAX_XXTEA_KEY8 16
+// #define MAX_XXTEA_KEY8 16
 // 32 Bit
-#define MAX_XXTEA_KEY32 4
+// #define MAX_XXTEA_KEY32 4
 // DWORD Size of Data Buffer
 #define MAX_XXTEA_DATA32 (UINT32CALCBYTE(MAX_XXTEA_DATA8))
 

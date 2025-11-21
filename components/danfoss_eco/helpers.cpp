@@ -109,5 +109,21 @@ namespace esphome
             bd_addr[5] = (mac >> 0) & 0xFF;
         }
 
+        void test_xxtea() {
+            Xxtea xx;
+            uint8_t key[16] = {1,2,3,4};
+            xx.set_key(key, 4);
+
+            uint8_t data[8] = {'T','E','S','T','D','A','T','A'};
+            uint8_t buf[32];
+            size_t maxlen = sizeof(buf);
+
+            int enc_status = xx.encrypt(data, 8, buf, &maxlen);
+            ESP_LOGI("xxtea", "Encrypt status=%d, outlen=%d", enc_status, (int)maxlen);
+            
+            int dec_status = xx.decrypt(buf, maxlen);
+            ESP_LOGI("xxtea", "Decrypt status=%d, result=%.*s", dec_status, 8, buf);
+        }
+
     }
 }
